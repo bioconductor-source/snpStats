@@ -47,9 +47,10 @@ read.pedfile <- function(file, n, snps, which, split="\t| +", sep=".",
   else {
     line <- readLines(con, n=1)
     fields <- strsplit(line, split)[[1]]
-    if (m%%2!=0)
+    nf <- length(fields)
+    if (nf%%2!=0)
       stop("Odd number of fields")
-    m <- (length(fields) - 6)/2
+    m <- (nf - 6)/2
     seek(con, 0)
   }
   nf <- 6+2*m

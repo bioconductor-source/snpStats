@@ -12,7 +12,7 @@ SNP support dataframes, this function writes \code{.bed},
 write.plink(file.base, snp.major = TRUE, snps,
    subject.data, pedigree, id, father, mother, sex, phenotype,
    snp.data, chromosome, genetic.distance, position, allele.1, allele.2,
-   na.code = 0)
+   na.code = 0, human.genome=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -82,6 +82,9 @@ write.plink(file.base, snp.major = TRUE, snps,
   \item{na.code}{The code to be written for \code{NA}
     in the \code{.fam} and \code{.bin} output files. It should be
     numeric (or capable of coercion to numeric).
+  }
+  \item{human.genome}{If TRUE, check the
+    \code{chromosome} argument for valid values.
   }
 }
 \details{

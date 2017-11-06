@@ -81,7 +81,7 @@ read.plink <- function(bed, bim, fam, na.strings=c("0", "-9"), sep=".",
 write.plink <- function(file.base, snp.major=TRUE, snps,
   subject.data, pedigree, id, father, mother, sex, phenotype,
   snp.data, chromosome, genetic.distance, position, allele.1, allele.2,
-                        na.code=0) {
+                        na.code=0, human.genome=TRUE) {
   
   mcall <- match.call()
   if (!is(snps, "SnpMatrix"))
@@ -202,28 +202,31 @@ write.plink <- function(file.base, snp.major=TRUE, snps,
   
   if (missing(snp.data)) { ## snp data are in calling environment
     if (missing(chromosome)) {
-      if (X)
-        chromosome <- rep(23, nc.snps)
+      if (human.genome && X)
+        chromosome <- rep("X", nc.snps)
       else
         chromosome <- rep(na.code, nc.snps)
     }
     else {
       len <- length(chromosome)
-      if (is.character(chromosome)) {
-        chromosome = match(chromosome,
-          c(as.character(1:22), "X", "Y", "XY", "MT"))
-        if (any(is.na(chromosome)))
-          stop("unrecognized chromosome name")
+      if (human.genome) {
+        if (is.integer(chromosome)) {
+          if (any(chromosome>22 | chromosome<1))
+              stop("Invalid chromosome number")
+        }
+        else {
+          chr = match(as.character(chromosome),
+                      c(as.character(1:22), "X", "Y", "XY", "MT"))
+          if (any(is.na(chr)))
+            stop("unrecognized chromosome name")
+          if (X && any(chr!=23))
+            stop("chromosome argument conflicts with snp data type")
+        }
       }
-      else
-        chromosome <- as.numeric(chromosome)
-      if (X && any(chromosome!=23))
-        stop("chromosome argument conflicts with snp data type")
       if (len==1) 
-        chromosome <- rep(as.numeric(chromosome), nc.snps)
+        chromosome <- rep(chromosome, nc.snps)
       else if (len!=nc.snps)
         stop("length of `chromosome' argument incompatible with `snps'")
-      chromosome[is.na(chromosome)] <- as.integer(na.code)
     }
 
     if (missing(genetic.distance))
@@ -249,25 +252,25 @@ write.plink <- function(file.base, snp.major=TRUE, snps,
     }
  
     if (missing(allele.1))
-      allele.1 <- rep("A", nc.snps)
+      allele.1 <- rep(as.character(na.code), nc.snps)
     else {
       len <- length(allele.1)
       if (len==nc.snps)
         allele.1 <- as.character(allele.1)
       else
         stop("length of `allele.1' argument incompatibe and `snps'")
-      allele.1[is.na(allele.1)] <- "A"
+      allele.1[is.na(allele.1)] <- as.character(na.code)
     }
  
    if (missing(allele.2))
-      allele.2 <- rep("B", nc.snps)
+      allele.2 <- rep(as.character(na.code), nc.snps)
     else {
       len <- length(allele.2)
       if (len==nc.snps)
         allele.2 <- as.character(allele.2)
       else
         stop("length of `allele.2' argument incompatibe and `snps'")
-      allele.2[is.na(allele.2)] <- "A"      
+      allele.2[is.na(allele.2)] <- as.character(na.code) 
     }
   } else { ## snp data are in data dataframe
     
@@ -299,17 +302,17 @@ write.plink <- function(file.base, snp.major=TRUE, snps,
     }
     
     if (missing(allele.1))
-      allele.1 <- rep("A", nc.snps)
+      allele.1 <- rep(as.character(na.code), nc.snps)
     else {
       allele.1 <- as.character(eval(mcall$allele.1, envir=snp.data))[sord]
-      allele.1[is.na(allele.1)] <- "A"
+      allele.1[is.na(allele.1)] <- as.character(na.code)
     }
                                    
     if (missing(allele.2))
-      allele.2 <- rep("B", nc.snps)
+      allele.2 <- rep(as.character(na.code), nc.snps)
     else {
       allele.2 <- as.character(eval(mcall$allele.2, envir=snp.data))[sord]
-      allele.2[is.na(allele.2)] <- "B"
+      allele.2[is.na(allele.2)] <- as.character(na.code)
     }
   }
 
