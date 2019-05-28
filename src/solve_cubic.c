@@ -1,10 +1,10 @@
 /* poly/solve_cubic.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007, 2009 Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -14,16 +14,18 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* solve_cubic.c - finds the real roots of x^3 + a x^2 + b x + c = 0 */
 
-/* Modifications to include files to allow stand-alone use (DC, Oct 2010)*/
+/* Modifications to include files to allow stand-alone use (DC)*/
 
-/*#include <config.h>*/
-/*#include <gsl/gsl_math.h>*/
-/*#include <gsl/gsl_poly.h>*/
+/*
+#include <config.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_poly.h>
+*/
 
 #include <math.h>
 #ifndef M_PI
@@ -40,6 +42,7 @@ gsl_poly_solve_cubic (double a, double b, double c,
 {
   double q = (a * a - 3 * b);
   double r = (2 * a * a * a - 9 * a * b + 27 * c);
+
   double Q = q / 9;
   double R = r / 54;
 
@@ -81,12 +84,12 @@ gsl_poly_solve_cubic (double a, double b, double c,
         }
       return 3 ;
     }
-  else if (CR2 < CQ3) /* equivalent to R2 < Q3 */
+  else if (R2 < Q3)
     {
-      double sqrtQ = sqrt (Q);
-      double sqrtQ3 = sqrtQ * sqrtQ * sqrtQ;
-      double theta = acos (R / sqrtQ3);
-      double norm = -2 * sqrtQ;
+      double sgnR = (R >= 0 ? 1 : -1);
+      double ratio = sgnR * sqrt (R2 / Q3);
+      double theta = acos (ratio);
+      double norm = -2 * sqrt (Q);
       *x0 = norm * cos (theta / 3) - a / 3;
       *x1 = norm * cos ((theta + 2.0 * M_PI) / 3) - a / 3;
       *x2 = norm * cos ((theta - 2.0 * M_PI) / 3) - a / 3;
