@@ -13,8 +13,8 @@
 void gzwc(const gzFile infile, const int nline, 
 	  long *chars, long *words, long *lines){
   int ch;
-  int sp=1;
-
+  int sp=1;  /* Was previous character read a white space character? */
+  int wol=0; /* Words on current line */
   *chars = 0;
   *words = 0;
   *lines = 0;
@@ -22,13 +22,18 @@ void gzwc(const gzFile infile, const int nline,
     ++(*chars);
     if(isspace(ch)) 
       sp=1;
-    else if(sp) {
+    else if(sp) { /* Previous character is whitespace, but this one isn't */
       ++(*words);
+      ++wol;
       sp=0;
     }
-    if (ch=='\n') 
+    if (ch=='\n') { /* Should detect line break on all OS's */
       ++(*lines);
+      wol = 0;
+    }
   }
+  if (wol)  /* Final line without terminating LF */
+    ++(*lines);
   gzrewind(infile);
   return;
 }
@@ -74,7 +79,7 @@ SEXP read_mach(const SEXP Filename, const SEXP Colnames, const SEXP Nsubject) {
     gzwc(infile, 0, &chars, &words, &lines);
     int over = words%lines;
     if (over) {
-      warning("Number of fields is not a multiple of the number of lines. Last %d fields will be ignored", over);
+      error("Number of fields is not a multiple of the number of lines", over);
     }
     ncol = words/lines - 2;
   }
