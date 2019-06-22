@@ -79,7 +79,7 @@ SEXP read_mach(const SEXP Filename, const SEXP Colnames, const SEXP Nsubject) {
     gzwc(infile, 0, &chars, &words, &lines);
     int over = words%lines;
     if (over) {
-      error("Number of fields is not a multiple of the number of lines", over);
+      error("Number of fields, %ld,  is not a multiple of the number of lines, %ld", words, lines);
     }
     ncol = words/lines - 2;
   }
