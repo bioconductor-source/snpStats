@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include <R.h>
 #include <Rinternals.h>
+#include <zlib.h>
 #include "uncertain.h"
-#include "zlib.h"
 
 #define BUFFERSIZE 1024
 /* wc function */

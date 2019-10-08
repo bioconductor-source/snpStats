@@ -10,8 +10,8 @@
 #include <Rmath.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+#include <zlib.h>
 #include "hash_index.h"
-#include "zlib.h"
 
 #define MAX_FLD 128
 
