@@ -55,7 +55,7 @@ read.plink <- function(bed, bim, fam, na.strings=c("0", "-9"), sep=".",
     if (any(duplicated(select.subjects)))
       stop("subject selection contains duplicates")
     select.subjects <- sort(select.subjects)
-    df.fam <- df.bim[select.subjects,]
+    df.fam <- df.fam[select.subjects,]
   }     
   ped <- as.character(df.fam[,1])
   mem <- as.character(df.fam[,2])

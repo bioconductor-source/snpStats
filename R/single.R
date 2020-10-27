@@ -47,6 +47,10 @@ single.snp.tests <- function(phenotype, stratum, data=sys.parent(), snp.data,
     nr.data <- nrow(data)
     # which points to rows in the data matrix
     which <- match(nm.snps, nm.data, nomatch=NA)
+    nnomatch <- sum(is.na(which))
+    if (nnomatch>0)
+      warning(nnomatch, " rows in the SnpMatrix have no matching row in the phen
+otype data matrix")
     phenotype <- as.numeric(eval(m$phenotype, envir=data))[which]
     complt <- !is.na(phenotype) 
     if (!smiss) {
