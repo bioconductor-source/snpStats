@@ -94,32 +94,36 @@ function(file, samples, snps,
   if (aread) {
     if (gread)
       stop("both genotype and allele fields specified")
+    if (missing(gcodes))
+      gcodes <- NULL
+    else
+      stop("gcodes argument set when data are read as alleles")
     if (verbose)
       cat("Alleles are read from two different fields\n")
-    if (missing(gcodes)) {
-      gcodes <- NA
-    } else if (!is.na(gcodes)) {
-      stop("gcodes argument set when data are read as alleles")
-    }
   } else {
     if (!gread)
       stop("neither allele or genotype fields specified")
     if (verbose)
       cat("Genotype read as a single field ")
-    if (missing(gcodes) || is.na(gcodes)) {
+    if (missing(gcodes)) {
       ## 2-character allele coding
       if (verbose)
         cat("of two characters (which specify the alleles)\n")
       gcodes <- NULL
-    } else if (length(gcodes)==3) {
-      ## genotype coding
-      gcodes <- as.character(gcodes)
-      if (verbose)
-        cat("matching one of", gcodes, "\n")
-    } else if (!is.character(gcodes) || length(gcodes)!=1)
-      stop("invalid value passed for gcodes argument")
-    else if (verbose)
-      cat("to be split into alleles by the regexp", gcodes, "\n")
+    } else {
+      if (length(gcodes)==3) {
+        ## genotype coding
+        gcodes <- as.character(gcodes)
+        if (verbose)
+          cat("matching one of", gcodes, "\n")
+      } else {
+        ## single field to be split in two?
+        if (!is.character(gcodes) || length(gcodes)!=1)
+          stop("invalid value passed for gcodes argument")
+        else if (verbose)
+          cat("to be split into alleles by the regexp", gcodes, "\n")
+      }
+    }	
   } 
 
   ## If missing size, read ahead
